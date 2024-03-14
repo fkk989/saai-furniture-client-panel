@@ -27,8 +27,7 @@ export const resetAddAdminForm = (
   setPassword: any,
   setConfirmPassword: any,
   setPasswordType: any,
-  setConfirmPasswordType: any,
-  setUserType: any
+  setConfirmPasswordType: any
 ) => {
   setName("");
   setEmail("");
@@ -36,7 +35,6 @@ export const resetAddAdminForm = (
   setConfirmPassword("");
   setPasswordType("");
   setConfirmPasswordType("");
-  setUserType("");
 };
 
 export const handleImgInput = async (mutate: any) => {

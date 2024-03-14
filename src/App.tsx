@@ -1,7 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 import {
   AddBlog,
+  AddCategory,
   AddClient,
+  AddDesign,
+  AllAdmin,
   BlogPage,
   ClientLoginForm,
   DiningDynamics,
@@ -76,6 +79,15 @@ export default function App() {
         />
 
         <Route
+          path="/all-sub-admin"
+          element={
+            <Protected
+              component={<Layout component={<AllAdmin />} />}
+            ></Protected>
+          }
+        />
+
+        <Route
           path="/dashboard/add-admin"
           element={
             <Protected
@@ -84,6 +96,38 @@ export default function App() {
                   component={
                     <div className="w-screen h-screen flex justify-center items-center">
                       <AddClient />
+                    </div>
+                  }
+                />
+              }
+            />
+          }
+        />
+        <Route
+          path="/dashboard/add-category"
+          element={
+            <Protected
+              component={
+                <Layout
+                  component={
+                    <div className="w-screen h-screen flex justify-center items-center">
+                      <AddCategory />
+                    </div>
+                  }
+                />
+              }
+            />
+          }
+        />
+        <Route
+          path="/dashboard/add-design"
+          element={
+            <Protected
+              component={
+                <Layout
+                  component={
+                    <div className="w-screen h-screen flex justify-center items-center">
+                      <AddDesign />
                     </div>
                   }
                 />

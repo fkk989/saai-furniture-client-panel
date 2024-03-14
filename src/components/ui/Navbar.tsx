@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useGetClient, useGetSubClient } from "../../hooks";
 import { DashboardDropDown } from "../DashboardDropDown";
 import { useRecoilValue } from "recoil";
-import { isClient } from "../../store";
+import { isClient, isSubClient } from "../../store";
 
 export const navObj: Array<{
   title?: string;
@@ -30,12 +30,13 @@ export const Navbar = () => {
   const { client } = useGetClient();
   const { subClient } = useGetSubClient();
   const is_client = useRecoilValue(isClient);
+  const is_sub_client = useRecoilValue(isSubClient);
 
   useEffect(() => {
     let previousScroll = window.scrollY;
     window.addEventListener("scroll", () => {
       let currentScroll = window.scrollY;
-      if (previousScroll > currentScroll) {
+      if (previousScroll >= currentScroll) {
         navbar!.current!.style.top = "0";
       } else {
         navbar!.current!.style.top = "-100px";
@@ -59,7 +60,7 @@ export const Navbar = () => {
       </Link>
       <div className="">
         <ul className="flex justify-between items-center gap-[30px] text-black">
-          {client || subClient || is_client ? (
+          {client || subClient || is_client || is_sub_client ? (
             <li className="w-fit h-fit">
               <SofaSetDropDown />
             </li>
@@ -78,7 +79,17 @@ export const Navbar = () => {
             );
           })}
 
-          {client || subClient || is_client ? (
+          {is_client || client ? (
+            <Link to={"/all-sub-admin"}>
+              <li className="text-[20px] font-bold hover:bg-[rgba(0,0,0,0.7)] p-[5px] pr-[15px] pl-[15px] hover:text-white rounded-lg">
+                All Sub Admin
+              </li>
+            </Link>
+          ) : (
+            <li></li>
+          )}
+
+          {client || subClient || is_client || is_sub_client ? (
             <DashboardDropDown />
           ) : (
             <Link to={"/login"}>

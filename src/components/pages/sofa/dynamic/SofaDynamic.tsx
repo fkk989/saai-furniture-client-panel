@@ -1,7 +1,14 @@
-import { useGetCategory, useGetCategoryById } from "../../../../hooks";
-import { SofaCard } from "../../../ui";
+import { UpdateDesignForm } from "../../../fomrs";
+import {
+  useDeleteDesign,
+  useGetClient,
+  useGetDesigns,
+  useGetSubClient,
+} from "../../../../hooks";
+import { DeletePage, EditPage, SofaCard } from "../../../ui";
 import { SofaBanner } from "./Banner";
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 interface SofaProps {
   location?: string;
@@ -9,14 +16,25 @@ interface SofaProps {
 }
 
 export const SofaDynamicPage: React.FC<SofaProps> = () => {
+  const [userType, setUserType] = useState<"client" | "sub-client" | "">("");
   const { categoryName } = useParams();
   const createdTitle = categoryName?.split("-").join(" ").trim();
+  const { client } = useGetClient();
+  const { subClient } = useGetSubClient();
+  const { designs } = useGetDesigns({ categoryTitle: createdTitle });
+  const { deleteDesignMutaion } = useDeleteDesign();
 
-  const { categories } = useGetCategory();
-  const { category } = useGetCategoryById({ title: createdTitle });
+  useEffect(() => {
+    if (client) {
+      setUserType("client");
+    }
+    if (subClient) {
+      setUserType("sub-client");
+    }
+  }, [client, subClient]);
   return (
     <div className="w-screen min-h-screen flex flex-col  items-center">
-      <SofaBanner title={category?.title} />
+      <SofaBanner title={createdTitle} />
 
       <div className="flex flex-col items-center">
         <div className="flex flex-col items-center gap-[10px]">
@@ -25,16 +43,24 @@ export const SofaDynamicPage: React.FC<SofaProps> = () => {
           </h1>
           <div className="w-[100px] h-[3px] bg-[#B19777]"></div>
         </div>
-        <div className="w-[90%] flex flex-wrap justify-center items-center gap-[40px] mt-[30px] mb-[50px]">
-          {categories
+        <div className="w-screen flex flex-wrap justify-center items-center gap-[40px] mt-[30px] mb-[50px]">
+          {designs
             ?.filter(({ title }) => title.toLowerCase() !== "dining set")
             .map((data) => {
               return (
-                <SofaCard
-                  key={data.id}
-                  title={data.title}
-                  imageUrl={data.imageUrl}
-                />
+                <div key={data.id} className="flex flex-col gap-[10px]">
+                  <SofaCard title={data.title} imageUrl={data.imageUrl} />
+                  <div className="flex items-center gap-[20px]">
+                    <EditPage
+                      component={<UpdateDesignForm designTitle={data.title} />}
+                    />
+                    <DeletePage
+                      confirmation={() => {
+                        deleteDesignMutaion.mutate({ id: data.id, userType });
+                      }}
+                    />
+                  </div>
+                </div>
               );
             })}
         </div>

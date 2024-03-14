@@ -1,9 +1,30 @@
-import { useGetCategory } from "../../../hooks";
+import { useEffect, useState } from "react";
+import {
+  useDeleteCategory,
+  useGetCategory,
+  useGetClient,
+  useGetSubClient,
+} from "../../../hooks";
 import { SofaCard } from "../../ui/SofaCard";
 import { Link } from "react-router-dom";
+import { DeletePage, EditPage } from "../../ui";
+import { UpdateCategoryForm } from "../../fomrs";
 
 export const Sofa = () => {
+  const [userType, setUserType] = useState<"client" | "sub-client" | "">("");
   const { categories } = useGetCategory();
+  const { deleteCategoryMutaion } = useDeleteCategory();
+  const { client } = useGetClient();
+  const { subClient } = useGetSubClient();
+
+  useEffect(() => {
+    if (client) {
+      setUserType("client");
+    }
+    if (subClient) {
+      setUserType("sub-client");
+    }
+  }, [client, subClient]);
   return (
     <div className="w-screen min-h-screen flex flex-col  items-center">
       <div
@@ -22,9 +43,21 @@ export const Sofa = () => {
           {categories?.map(({ id, title, imageUrl }) => {
             const link = title.split(" ").join("-");
             return (
-              <Link key={id} to={`/sofa/${link}`}>
-                <SofaCard title={title} imageUrl={imageUrl} />
-              </Link>
+              <div key={id} className="flex flex-col gap-[10px]">
+                <Link key={id} to={`/sofa/${link}`}>
+                  <SofaCard title={title} imageUrl={imageUrl} />
+                </Link>
+                <div className="flex items-center gap-[20px]">
+                  <EditPage
+                    component={<UpdateCategoryForm categoryTitle={title} />}
+                  />
+                  <DeletePage
+                    confirmation={() => {
+                      deleteCategoryMutaion.mutate({ id, userType });
+                    }}
+                  />
+                </div>
+              </div>
             );
           })}
         </div>

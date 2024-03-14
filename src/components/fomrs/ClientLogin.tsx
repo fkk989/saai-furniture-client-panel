@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import { pushToCheckbox, selectOnlyCheckBox } from "../../helpers";
 import { useSetRecoilState } from "recoil";
-import { isClient } from "../../store";
+import { isClient, isSubClient } from "../../store";
 
 // input style
 const inputStyle = `w-[90%] h-[55px] bg-transparent outline-none text-white text-[20px] border border-[#ffffff88] rounded-lg placeholder:text-white placeholder:text-[20px] p-[10px] `;
@@ -33,12 +33,19 @@ export const ClientLoginForm: React.FC<ClientLoginForm> = () => {
   const { clientLoginQuery, client } = useClientLogin(queryBody);
   const { subClientLoginQuery, subClient } = useSubClientLogin(queryBody);
   const setIsClient = useSetRecoilState(isClient);
+  const setIsSubClient = useSetRecoilState(isSubClient);
+
   useEffect(() => {
+    if (client) {
+      setIsClient(true);
+    }
+    if (subClient) {
+      setIsSubClient(true);
+    }
     if (client || subClient) {
       userType === "client"
         ? toast.success("Success", { id: "client-login" })
         : toast.success("Success", { id: "sub-client-login" });
-      setIsClient(true);
     }
     if (clientLoginQuery.isError || subClientLoginQuery.isError) {
       userType === "client"

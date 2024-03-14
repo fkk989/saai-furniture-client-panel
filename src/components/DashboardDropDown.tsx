@@ -1,13 +1,17 @@
 import { useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { Link } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { isClient } from "../store";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { isClient, isSubClient } from "../store";
+import { useGetClient, useGetSubClient } from "../hooks";
 
 export const DashboardDropDown = () => {
   const [open, setOpen] = useState(false);
   const dashboardDropDown = useRef<HTMLDivElement | null>(null);
-  const setIsClient = useSetRecoilState(isClient);
+  const { client } = useGetClient();
+  const { subClient } = useGetSubClient();
+  const [is_client, setIsClient] = useRecoilState(isClient);
+  const is_sub_client = useRecoilValue(isSubClient);
 
   return (
     <div
@@ -30,9 +34,23 @@ export const DashboardDropDown = () => {
         }`}
       >
         <ul className="flex flex-col text-white">
-          <Link to={"/dashboard/add-admin"}>
+          {client || is_client ? (
+            <Link to={"/dashboard/add-admin"}>
+              <li className=" hover:bg-[rgba(0,0,0,0.6)] text-[18px] box-content p-[5px] pl-[10px] pr-[10px] rounded-md cursor-pointer">
+                Add subAdmin
+              </li>
+            </Link>
+          ) : (
+            <li></li>
+          )}
+          <Link to={"/dashboard/add-category"}>
             <li className=" hover:bg-[rgba(0,0,0,0.6)] text-[18px] box-content p-[5px] pl-[10px] pr-[10px] rounded-md cursor-pointer">
-              Add Admin
+              Add Category
+            </li>
+          </Link>
+          <Link to={"/dashboard/add-design"}>
+            <li className=" hover:bg-[rgba(0,0,0,0.6)] text-[18px] box-content p-[5px] pl-[10px] pr-[10px] rounded-md cursor-pointer">
+              Add Design
             </li>
           </Link>
 

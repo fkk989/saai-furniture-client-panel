@@ -1,9 +1,10 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { baseUrl } from "../../constant";
 
 interface ClientProp {
+  id: string;
   name: string;
   email: string;
   password: string;
@@ -19,6 +20,25 @@ export const useDefaultClient = () => {
   });
 
   return { ...query, client: query.data };
+};
+
+export const useGetAllSubClient = () => {
+  const query = useQuery({
+    queryKey: ["get-all-client"],
+    queryFn: async () => {
+      const token = localStorage.getItem("saai-client-token");
+      const { data } = await axios.get(`${baseUrl}/client/all-sub-client`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return data as {
+        clients: Array<ClientProp>;
+      };
+    },
+  });
+
+  return { getAdminQuery: query, clients: query.data?.clients };
 };
 
 // admion login query
@@ -140,4 +160,34 @@ export const useAddSubClient = () => {
   });
 
   return { AddSubClientMutation: mutation, client: mutation.data };
+};
+
+export const useDeleteSubClient = () => {
+  const queryClient = useQueryClient();
+  const token = localStorage.getItem("saai-client-token");
+  const mutation = useMutation({
+    mutationKey: ["deleting-sub-admin"],
+    mutationFn: async ({ id }: { id: string }) => {
+      toast.loading("removing sub admin", { id: "removing-sub-admin" });
+      const data = (
+        await axios.delete(`${baseUrl}/client/delete-sub-client`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { id },
+        })
+      ).data;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("removed", { id: "removing-sub-admin" });
+      queryClient.invalidateQueries({
+        queryKey: ["get-all-client"],
+      });
+    },
+    onError: () => {
+      toast.error("Error removing sub admin", { id: "removing-sub-admin" });
+    },
+  });
+  return { subClientDeleteMutation: mutation };
 };

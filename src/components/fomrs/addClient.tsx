@@ -1,13 +1,9 @@
 "use client";
-import {
-  pushToCheckbox,
-  resetAddAdminForm,
-  selectOnlyCheckBox,
-} from "../../helpers";
-import { useRef, useState } from "react";
+import { resetAddAdminForm } from "../../helpers";
+import { useState } from "react";
 
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { useAddSubClient, useAddClient } from "../../hooks";
+import { useAddSubClient } from "../../hooks";
 import toast from "react-hot-toast";
 
 // input style
@@ -24,10 +20,7 @@ export const AddClient = () => {
   const [confirmPasswordType, setConfirmPasswordType] = useState<
     "text" | "password"
   >("password");
-  const [userType, setUserType] = useState<"client" | "sub-client">();
 
-  // checkbox refs
-  const checkbox = useRef<HTMLInputElement[]>([]);
   const queryBody = {
     name,
     email,
@@ -35,13 +28,12 @@ export const AddClient = () => {
     confirmPassword,
   };
 
-  const { addClientMutation } = useAddClient();
   const { AddSubClientMutation } = useAddSubClient();
   return (
     <div className=" w-[350px] mobile:w-[500px] h-[600px] bg-[#999999] rounded-lg overflow-scroll z-[10]">
       <div className="w-[100%] h-[100%] flex flex-col items-center">
         <h1 className="text-white text-[25px] font-[500] mt-[20px]">
-          Add Admin
+          Add Sub Admin
         </h1>
         <div className="w-[100%]  flex flex-col items-center mt-[50px] gap-[30px]">
           <input
@@ -114,36 +106,6 @@ export const AddClient = () => {
               />
             )}
           </div>
-          <div className="w-[90%] text-white flex items-center gap-[10px]">
-            <label htmlFor="client" className="flex items-center gap-[5px]">
-              <input
-                ref={(e) => {
-                  pushToCheckbox(e, checkbox);
-                }}
-                onClick={(e) => {
-                  selectOnlyCheckBox(e.currentTarget, checkbox);
-                  setUserType("client");
-                }}
-                type="checkbox"
-                id="client"
-              />
-              <span>Admin</span>
-            </label>
-            <label htmlFor="sub-client" className="flex items-center gap-[5px]">
-              <input
-                ref={(e) => {
-                  pushToCheckbox(e, checkbox);
-                }}
-                onClick={(e) => {
-                  selectOnlyCheckBox(e.currentTarget, checkbox);
-                  setUserType("sub-client");
-                }}
-                type="checkbox"
-                id="sub-client"
-              />
-              <span>sub Admin</span>
-            </label>
-          </div>
         </div>
         <div className="w-[100%] flex flex-col justify-center items-center mt-[20px] gap-[10px]">
           <button
@@ -152,11 +114,8 @@ export const AddClient = () => {
               if (password !== confirmPassword) {
                 return toast.error("password and confirm password not equal");
               }
-              if (userType === "client") {
-                addClientMutation.mutate(queryBody);
-              } else {
-                AddSubClientMutation.mutate(queryBody);
-              }
+
+              AddSubClientMutation.mutate(queryBody);
 
               resetAddAdminForm(
                 setName,
@@ -164,8 +123,7 @@ export const AddClient = () => {
                 setPassword,
                 setConfirmPassword,
                 setPasswordType,
-                setConfirmPasswordType,
-                setUserType
+                setConfirmPasswordType
               );
             }}
           >
