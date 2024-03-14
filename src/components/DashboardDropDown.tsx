@@ -1,17 +1,15 @@
 import { useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { Link } from "react-router-dom";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { isClient, isSubClient } from "../store";
-import { useGetClient, useGetSubClient } from "../hooks";
+import { useRecoilState } from "recoil";
+import { isClient } from "../store";
+import { useGetClient } from "../hooks";
 
 export const DashboardDropDown = () => {
   const [open, setOpen] = useState(false);
   const dashboardDropDown = useRef<HTMLDivElement | null>(null);
   const { client } = useGetClient();
-  const { subClient } = useGetSubClient();
   const [is_client, setIsClient] = useRecoilState(isClient);
-  const is_sub_client = useRecoilValue(isSubClient);
 
   return (
     <div
